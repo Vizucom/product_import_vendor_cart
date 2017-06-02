@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+    <record id="vendor_settings_tree" model="ir.ui.view">
+        <field name="name">vendor.settings.tree</field>
+        <field name="model">product_import_vendor_cart.vendor_settings</field>
+        <field name="arch" type="xml">
+          <tree string="Vendor Settings">
+            <field name="name"/>
+            <field name="partner_id"/>
+            <field name="file_format"/>
+          </tree>
+        </field>
+    </record>
+
+    <record id="vendor_settings_form" model="ir.ui.view">
+        <field name="name">vendor.settings.form</field>
+        <field name="model">product_import_vendor_cart.vendor_settings</field>
+        <field name="arch" type="xml">
+          <form string="Vendor Settings">
+            <header>
+            </header>
+            <sheet>
+              <div class="oe_title">
+                <div class="oe_edit_only">
+                  <label for="name"/>
+                </div>
+                <h1><field name="name" required="1"/></h1>
+              </div>
+              <div class="oe_right oe_button_box" style="width: 300px;" name="buttons">
+              </div>
+
+              <group>
+                <group>
+                  <field name="partner_id" required="True" options="{ 'no_create': True }"/>
+                  <field name="file_format" required="True"/>
+                  <field name="row_with_headers" attrs="{ 'invisible': [('file_format', '!=', 'excel')], 'required': [('file_format', '=', 'excel')] }"/>
+                  <field name="stop_after_empty_row" attrs="{ 'invisible': [('file_format', '!=', 'excel')] }"/>
+                </group>
+                <group/>
+              </group>
+
+              <notebook>
+                <page string="Field mappings">
+                  <field name="field_mapping_ids" context="{ 'default_vendor_settings_id': active_id }">
+                    <tree editable="bottom">
+                      <field name="column_name" required="1"/>
+                      <field name="product_field_id" options="{ 'no_create': True }"/>
+                      <field name="vendor_settings_id" invisible="1"/>
+                    </tree>
+                  </field>
+
+                  <p class="oe_edit_only">You can pre-fill the CSV/Excel columns by uploading a sample file using the field below</p>
+                  <group class="oe_edit_only">
+                    <group col="2">
+                      <field name="sample_file" nolabel="1"/>
+                      <button string="Load fields" type="object" name="load_mapping_fields_from_file" class="oe_highlight"/>
+                    </group>
+                  </group>
+
+                </page>
+              </notebook>
+
+            </sheet>
+          </form>
+        </field>
+    </record>
+
+    <record id="vendor_settings_action" model="ir.actions.act_window">
+      <field name="name">Vendor Settings</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">product_import_vendor_cart.vendor_settings</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="context">{}</field>
+    </record>
+
+    <menuitem id="submenu_vendor_settings" parent="base.menu_custom" sequence="50" name="Vendor Shopping Cart Import"/>
+    <menuitem id="menu_vendor_settings" parent="submenu_vendor_settings" action="vendor_settings_action" sequence="10" name="Vendor Settings"/>
+
+  </data>
+</openerp>
