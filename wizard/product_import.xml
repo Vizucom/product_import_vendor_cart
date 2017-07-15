@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="cart_import_form" model="ir.ui.view">
+      <field name="name">Vendor Shopping Cart Import</field>
+      <field name="model">product_import_vendor_cart.import_wizard</field>
+      <field name="arch" type="xml">
+        <form string="Vendor Shopping Cart Import">
+
+          <header>
+            <field name="state" widget="statusbar"/>
+          </header>
+          <sheet>
+
+            <!-- File selection state -->
+            <div attrs="{'invisible': [('state', '!=', 'file_selection')]}">
+              <p class="oe_grey">
+                Select a vendor template and a file to import
+              </p>
+              <group>
+                <field name="vendor_settings_id" options="{ 'no_create': True }" attrs="{ 'required': [('state', '=', 'file_selection')]}"/>
+                <field name="product_file" attrs="{ 'required': [('state', '=', 'file_selection')]}"/>
+              </group>
+            </div>
+
+            <!-- Validation state -->
+            <div attrs="{'invisible': [('state', '!=', 'validation')]}">
+
+
+              <group attrs="{'invisible': [('issue_ids', '!=', [])]}">
+                <field name="message_validation_ok" nolabel="1" readonly="1" style="color: #0A0;"/>
+              </group>
+
+              <group attrs="{'invisible': [('issue_ids', '=', [])]}">
+                <field name="message_validation_error" nolabel="1" readonly="1" style="color: #A00;"/>
+              </group>
+
+              <group string="New Products To Be Added" attrs="{'invisible': [('issue_ids', '!=', [])]}">
+                <field name="new_product_line_ids" readonly="1" nolabel="1">
+                  <tree>
+                    <field name="name"/>
+                  </tree>
+                </field>
+              </group>
+
+              <group string="Existing Products To Be Updated" attrs="{'invisible': [('issue_ids', '!=', [])]}">
+                <field name="existing_product_ids" readonly="1" nolabel="1">
+                  <tree>
+                    <field name="default_code"/>
+                    <field name="name"/>
+                  </tree>
+                </field>
+              </group>
+
+
+              <group string="Issues" attrs="{'invisible': [('issue_ids', '=', [])]}">
+                <field name="issue_ids" readonly="1" nolabel="1">
+                  <tree>
+                      <field name="row"/>
+                      <field name="data"/>
+                      <field name="issue"/>
+                  </tree>
+                </field>
+              </group>
+
+            </div>
+
+            <!-- Done state -->
+            <div attrs="{'invisible': [('state', '!=', 'done')]}">
+
+              <group>
+                <field name="message_done" nolabel="1" readonly="1" style="color: #0A0;"/>
+              </group>
+
+            </div>
+
+          </sheet>
+          <footer>
+            <div attrs="{'invisible': [('state', '!=', 'file_selection')]}">
+              <button name="file_validate" type="object" string="Validate File" class="oe_highlight"/> or <button string="Cancel" class="oe_link" special="cancel"/>
+            </div>
+            <div attrs="{'invisible': ['|', ('state', '!=', 'validation'), ('issue_ids', '!=', [])]}">
+              <button name="file_import" type="object" string="Import File" class="oe_highlight"/> or <button string="Cancel" class="oe_link" special="cancel"/>
+            </div>
+            <div attrs="{'invisible': ['|', ('state', '!=', 'validation'), ('issue_ids', '=', [])]}">
+              <button name="file_select" type="object" string="Return to import" class="oe_highlight"/> or <button string="Cancel" class="oe_link" special="cancel"/>
+            </div>
+            <div attrs="{'invisible': [('state', '!=', 'done')]}">
+              <button string="Close" class="oe_highlight" special="cancel"/>
+            </div>
+
+          </footer>
+
+        </form>
+      </field>
+    </record>
+
+    <record id="cart_import_wizard_action" model="ir.actions.act_window">
+      <field name="name">Vendor Shopping Cart Import</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">product_import_vendor_cart.import_wizard</field>
+      <field name="view_mode">form</field>
+      <field name="view_type">form</field>
+      <field eval="False" name="view_id"/>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem action="cart_import_wizard_action" id="cart_import_wizard_menu" name="Import Vendor Shopping Cart" parent="stock.menu_stock_inventory_control" sequence="25"/>
+
+  </data>
+</openerp>

@@ -22,7 +22,7 @@
     'description': """
 Vendor Shopping Cart Import
 ===========================
- * Adds a new view for importing csv/excel shopping carts exported from websites of from vendors/manufacturers such as Farnell, Phoenix Contacts and Thorlabs
+ * Adds a new view for importing csv/excel shopping carts exported from websites of vendors
  * Intended as a lightweight alternative for the Odoo core's import, so that the end users can do simple imports without dealing with XML IDs
  * Supports updating and creating products
  * Automatically creates a product.supplierinfo row for the vendor
@@ -31,5 +31,6 @@ Vendor Shopping Cart Import
 """,
     'data': [
         'views/vendor_settings.xml',
+        'wizard/product_import.xml'
     ],
 }
