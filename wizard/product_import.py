@@ -9,24 +9,6 @@ import xlrd
 _logger = logging.getLogger(__name__)
 
 
-class ProductImportWizardIssue(models.TransientModel):
-
-    _name = 'product_import_vendor_cart.import_wizard_issue'
-
-    wizard_id = fields.Many2one('product_import_vendor_cart.import_wizard', 'Wizard')
-    row = fields.Integer('Row')
-    data = fields.Char('Data')
-    issue = fields.Char('Issue')
-
-
-class ProductImportProductLine(models.TransientModel):
-
-    _name = 'product_import_vendor_cart.import_product_line'
-
-    name = fields.Char('Product')
-    wizard_id = fields.Many2one('product_import_vendor_cart.import_wizard', 'Wizard')
-
-
 class ProductImportWizard(models.TransientModel):
 
     _name = 'product_import_vendor_cart.import_wizard'
