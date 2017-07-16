@@ -13,7 +13,8 @@ Adds a new wizard for importing csv/excel shopping carts exported from websites 
 
 Installation
 ============
-* Just install this module
+* Install the xlrd library with pip install xlrd
+* Install this module
 
 Configuration
 =============
