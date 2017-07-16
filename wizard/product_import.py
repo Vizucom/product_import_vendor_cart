@@ -65,11 +65,6 @@ class ProductImportWizard(models.TransientModel):
         return self.get_return_dict()
 
     def get_csv_reader(self):
-        """
-        decoded_csv = base64.b64decode(self.product_file)
-        reader = csv.reader(StringIO.StringIO(decoded_csv), quotechar='"')
-        return reader
-        """
         decoded_csv = base64.b64decode(self.product_file)
         reader = csv.reader(StringIO.StringIO(decoded_csv), quotechar='"')
         range_start = 1
@@ -80,12 +75,6 @@ class ProductImportWizard(models.TransientModel):
         return reader, range_start, range_stop, csv_rows
 
     def get_xls_reader(self):
-        """
-        decoded_xls = base64.b64decode(self.product_file)
-        filelike = StringIO.StringIO(decoded_xls)
-        reader = xlrd.open_workbook(file_contents=filelike.getvalue())
-        return reader
-        """
         decoded_xls = base64.b64decode(self.product_file)
         filelike = StringIO.StringIO(decoded_xls)
         reader = xlrd.open_workbook(file_contents=filelike.getvalue())
@@ -93,7 +82,6 @@ class ProductImportWizard(models.TransientModel):
         range_start = self.vendor_settings_id.row_with_headers
         range_stop = sheet.nrows
         return reader, range_start, range_stop, sheet
-        #reader, range_start, range_stop, sheet = self.get_xls_reader()
 
     def validate_contents(self):
         ''' Validates the CSV/XLS contents based on customized rules '''
@@ -106,26 +94,14 @@ class ProductImportWizard(models.TransientModel):
 
         # Find the header row
         if file_format == 'csv':
-            """
-            reader = self.get_csv_reader()
-            header_row = next(reader, None)
-            """
             reader, range_start, range_stop, csv_rows = self.get_csv_reader()
             sheet = False
             header_row = next(reader, None)
-
         else:
-            """
-            reader = self.get_xls_reader()
-            sheet = reader.sheet_by_index(0)
-            header_index = self.vendor_settings_id.row_with_headers - 1
-            header_row = sheet.row(header_index)
-            """
             reader, range_start, range_stop, sheet = self.get_xls_reader()
             csv_rows = False
             header_index = self.vendor_settings_id.row_with_headers - 1
             header_row = sheet.row(header_index)
-
 
         # Check that the number of columns in the header is the same for both the file and the mapping
         if file_format == 'csv':
@@ -183,6 +159,11 @@ class ProductImportWizard(models.TransientModel):
 
         ''' Iterate content rows from the header+1 row onwards '''
         for row_number in range(range_start, range_stop):
+
+            # Stop iteration at the first encountered empty row (=empty first cell)
+            if self.get_cell_value(file_format, row_number, 0, excel_data=sheet, csv_data=csv_rows) == '':
+                break
+
             for mapping in self.vendor_settings_id.field_mapping_ids:
                 if mapping.product_field_ids:
 
@@ -218,7 +199,6 @@ class ProductImportWizard(models.TransientModel):
         else:
             self.message_validation_ok = u'Validating file columns was successful, you can proceed with the import. The import will create / update the following products:'
 
-
     def get_cell_value(self, file_format, row, col, excel_data, csv_data):
         ''' Get the contents of a specific cell '''
         if file_format == 'csv':
@@ -240,20 +220,8 @@ class ProductImportWizard(models.TransientModel):
         csv_rows = False
         sheet = False
         if file_format == 'csv':
-            """
-            reader = self.get_csv_reader()
-            range_start = 1
-            csv_rows = list(reader)
-            range_stop = len(csv_rows)
-            """
             reader, range_start, range_stop, csv_rows = self.get_csv_reader()
         else:
-            """
-            reader = self.get_xls_reader()
-            sheet = reader.sheet_by_index(0)
-            range_start = self.vendor_settings_id.row_with_headers
-            range_stop = sheet.nrows
-            """
             reader, range_start, range_stop, sheet = self.get_xls_reader()
 
         ''' Iterate content rows from the header+1 row onwards '''
@@ -345,7 +313,7 @@ class ProductImportWizard(models.TransientModel):
                 for existing_product in existing_products:
 
                     # Check for existing supplierinfo row for the product and vendor
-                    existing_supplierinfo = supplierinfo_model.search(args=[('product_id', '=', existing_product.id),
+                    existing_supplierinfo = supplierinfo_model.search(args=[('product_tmpl_id', '=', existing_product.product_tmpl_id.id),
                                                                             ('name', '=', self.vendor_settings_id.partner_id.id)])
 
                     if existing_supplierinfo:
