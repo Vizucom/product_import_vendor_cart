@@ -33,6 +33,7 @@
     ],
     'data': [
         'views/vendor_settings.xml',
-        'wizard/product_import.xml'
+        'wizard/product_import.xml',
+        'security/ir.model.access.csv',
     ],
 }
