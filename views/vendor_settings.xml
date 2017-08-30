@@ -37,6 +37,8 @@
                   <field name="file_format" required="True"/>
                   <field name="row_with_headers" attrs="{ 'invisible': [('file_format', '!=', 'excel')], 'required': [('file_format', '=', 'excel')] }"/>
                   <field name="stop_after_empty_row" attrs="{ 'invisible': [('file_format', '!=', 'excel')] }"/>
+                  <field name="delimiter" attrs="{ 'invisible': [('file_format', '!=', 'csv')], 'required': [('file_format', '=', 'csv')] }"/>
+                  <field name="encoding" attrs="{ 'invisible': [('file_format', '!=', 'csv')], 'required': [('file_format', '=', 'csv')] }"/>
                 </group>
                 <group/>
               </group>

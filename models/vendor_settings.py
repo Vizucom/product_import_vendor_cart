@@ -13,9 +13,12 @@ class VendorSettings(models.Model):
     _FILE_FORMATS = [('csv', 'CSV'),
                      ('excel', 'Excel')]
 
-    def get_csv_reader(self):
+    _ENCODINGS = [('UTF-8', 'UTF-8'),
+                  ('latin_1', 'ISO-8859-1')]
+
+    def get_csv_reader(self, delimiter=','):
         decoded_csv = base64.b64decode(self.sample_file)
-        reader = csv.reader(StringIO.StringIO(decoded_csv))
+        reader = csv.reader(StringIO.StringIO(decoded_csv), delimiter=delimiter)
         return reader
 
     def get_xls_reader(self):
@@ -38,13 +41,14 @@ class VendorSettings(models.Model):
         column_number = 1
         if self.file_format == 'csv':
             try:
-                reader = self.get_csv_reader()
+                reader = self.get_csv_reader(delimiter=str(self.delimiter))
                 header_row = next(reader, None)
+                encoding = self.encoding
 
                 for column in header_row:
                     mapping_model.create({
                         'column_number': column_number,
-                        'column_name': column,
+                        'column_name': column.decode(encoding),
                         'vendor_settings_id': self.id,
                     })
                     column_number += 1
@@ -76,6 +80,8 @@ class VendorSettings(models.Model):
     row_with_headers = fields.Integer('Row that contains the headers', default=1)
     stop_after_empty_row = fields.Boolean('Stop after first empty row', help='''For files that contain also other contents than just shopping cart lines''')
     file_format = fields.Selection(_FILE_FORMATS, string='File format')
+    delimiter = fields.Char('Delimiter', size=1, default=',')
+    encoding = fields.Selection(_ENCODINGS, 'Encoding', default='UTF-8')
     identifying_field_id = fields.Many2one('ir.model.fields', string='Identifying Product Field', domain=[('model_id.model', '=', 'product.product'), ('ttype', 'in', ['char', 'text', 'integer', 'float'])], help='''If this field matches, the existing product is updated instead of creating a new one''')
     field_mapping_ids = fields.One2many('product_import_vendor_cart.field_mapping', 'vendor_settings_id', 'Field Mappings')
     uom_mapping_ids = fields.One2many('product_import_vendor_cart.uom_mapping', 'vendor_settings_id', 'UoM Mappings')

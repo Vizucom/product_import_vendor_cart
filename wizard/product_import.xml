@@ -48,6 +48,8 @@
                   <tree>
                     <field name="default_code"/>
                     <field name="name"/>
+                    <field name="manufacturer"/>
+                    <field name="manufacturer_pref"/>
                   </tree>
                 </field>
               </group>

@@ -14,6 +14,7 @@
 ##############################################################################
 
 import currency_mapping
+import product_product
 import uom_mapping
 import field_mapping
 import vendor_settings
