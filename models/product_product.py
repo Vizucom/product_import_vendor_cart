@@ -13,14 +13,14 @@ class ProductProduct(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'manufacturer_pref' in vals:
+        if 'manufacturer_pref' in vals and vals['manufacturer_pref']:
             vals['manufacturer_pref'] = vals['manufacturer_pref'].strip()
 
-        return super(ProductProduct, self).create(vals)        
+        return super(ProductProduct, self).create(vals)
 
     @api.multi
     def write(self, vals):
-        if 'manufacturer_pref' in vals:
+        if 'manufacturer_pref' in vals and vals['manufacturer_pref']:
             vals['manufacturer_pref'] = vals['manufacturer_pref'].strip()
 
         return super(ProductProduct, self).write(vals)
